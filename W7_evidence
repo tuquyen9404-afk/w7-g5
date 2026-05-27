@@ -1,0 +1,521 @@
+# W7 Evidence Pack — AI Study Buddy
+
+## 1. Cover
+- Group ID: G5
+- Members: Minh, Nam, Hoàng, Vinh, Sơn, Quyên, Thủy
+- Live URL: [điền sau khi deploy]
+- GitHub repo: [điền link repo]
+- Demo video: [điền link YouTube unlisted hoặc docs/demo.mp4]
+- Total spend: $[điền sau]
+
+---
+
+## 2. Domain + Use Case
+- Domain: A — EduTech
+- App name: AI Study Buddy (StudyBot)
+- Target users: University students, self-learners, exam-prep candidates
+- User pain: Students waste hours re-reading lecture notes to find key concepts and prepare for exams
+- Real-world parallel: Google NotebookLM, Quizlet AI, Khanmigo (Khan Academy)
+
+---
+
+## 3. Architecture
+
+### Final architecture diagram
+[Paste link hoặc embed ảnh diagram sau khi Minh commit]
+
+### Service mapping — 7 mandatory capabilities
+| # | Capability | Service | Why |
+|---|-----------|---------|-----|
+| 1 | User-Facing Entry | CloudFront + S3 static + API Gateway HTTP API | Public HTTPS, low ops overhead |
+| 2 | Application Compute | Lambda Python + FastAPI + Mangum | Serverless, cheap, fast deploy |
+| 3 | AI/ML Feature | Bedrock Knowledge Base + Claude Haiku + Titan Embeddings | RAG grounds answers in uploaded docs |
+| 4 | Data Persistence | DynamoDB | Topic/session metadata is key-value, no JOIN needed |
+| 5 | Object Storage | S3 | Stores uploaded files + static frontend |
+| 6 | Network Foundation | VPC + private subnets + Security Groups | DB not public, resource access controlled |
+| 7 | Identity & Access | IAM least-privilege execution roles | No wildcard policies |
+
+### Optional capability attempted
+- #8 Full Observability — CloudWatch dashboard + custom metric + alarm + Log Insights query
+
+### Data flow
+
+---
+
+## 4. Service Decisions and Trade-offs
+
+### DECISION 1: DynamoDB over RDS
+**ALTERNATIVES CONSIDERED:**
+- RDS PostgreSQL — better for relational analytics, but unnecessary for simple topic/doc lookup
+- SQLite — easy local dev, not suitable for persistent cloud demo
+
+**MEASUREMENT:**
+- Access pattern 1: list docs by user/topic → single key lookup
+- Access pattern 2: save query history by user/topic → single key lookup
+- Both patterns do not require JOIN
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day1/dynamodb_items.png
+
+**TRADE-OFF ACCEPTED:**
+- Gave up SQL aggregation flexibility for faster setup, lower cost, simpler scaling
+
+---
+
+### DECISION 2: Bedrock KB (RAG) over direct InvokeModel
+**ALTERNATIVES CONSIDERED:**
+- Direct InvokeModel only — fastest to build, but cannot ground answers in uploaded docs
+- Full custom vector DB — more control, too much implementation risk in 48h
+
+**MEASUREMENT:**
+- [Điền sau: X/5 probe questions answered correctly with citation]
+- [Điền sau: average latency ___ ms]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/qa_citations.png
+
+**TRADE-OFF ACCEPTED:**
+- Bedrock KB less customizable, but much faster to ship in 48h
+
+---
+
+### DECISION 3: Claude Haiku over Sonnet
+**ALTERNATIVES CONSIDERED:**
+- Claude Sonnet — better reasoning, ~3x higher cost
+- Titan Text — cheaper, weaker answer quality on our sample questions
+
+**MEASUREMENT:**
+- Haiku: $1.00/1M input tokens, $5.00/1M output tokens
+- Sonnet: $3.00/1M input tokens, $15.00/1M output tokens
+- [Điền sau: Haiku answered X/5 probe questions correctly]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/bedrock_logs.png
+
+**TRADE-OFF ACCEPTED:**
+- Slightly weaker reasoning than Sonnet, accepted to reduce cost and keep demo fast
+
+---
+
+## 5. Deployment Evidence
+
+### Public URL
+![Public URL loads](screenshots/day1/public_url.png)
+- URL: [điền]
+- Status: loads in browser, no SSL errors
+
+### API Gateway
+![API Gateway](screenshots/day1/api_gateway.png)
+
+### Lambda function
+![Lambda](screenshots/day1/lambda_function.png)
+
+### Lambda CloudWatch logs
+![CloudWatch logs](screenshots/day1/cloudwatch_logs.png)
+
+### S3 object after upload
+![S3 object](screenshots/day1/s3_object.png)
+- Bucket: [tên bucket]
+- Block Public Access: ON
+- Versioning: ON
+- Encryption: ON
+
+### DynamoDB record
+![DynamoDB](screenshots/day1/dynamodb_items.png)
+- Table: [tên table]
+- Record exists after upload
+
+### IAM role
+![IAM role](screenshots/day1/iam_role.png)
+- Role name: [tên role]
+- No AdministratorAccess, no wildcard Action: *
+
+---
+
+## 6. AI Evidence
+
+### Sample input file
+- File: docs/sample_input/lecture.pdf
+- Type: [PDF với table/figure/caption]
+
+### Summary output
+![Summary](screenshots/day2/summary_output.png)
+
+### Q&A with citation
+![Q&A citation](screenshots/day2/qa_citations.png)
+- Citation format: [filename - chunk_id]
+
+### Quiz output
+![Quiz](screenshots/day2/quiz_output.png)
+- 5 MCQ questions generated
+
+### Retrieval evidence
+- [Điền: chunking strategy dùng gì, chunk size bao nhiêu]
+- [Điền: failure mode phát hiện được là gì, đã fix thế nào]
+
+---
+
+## 7. Security and IAM
+
+### IAM least-privilege policy
+Lambda execution role permissions:
+
+---
+
+## 4. Service Decisions and Trade-offs
+
+### DECISION 1: DynamoDB over RDS
+**ALTERNATIVES CONSIDERED:**
+- RDS PostgreSQL — better for relational analytics, but unnecessary for simple topic/doc lookup
+- SQLite — easy local dev, not suitable for persistent cloud demo
+
+**MEASUREMENT:**
+- Access pattern 1: list docs by user/topic → single key lookup
+- Access pattern 2: save query history by user/topic → single key lookup
+- Both patterns do not require JOIN
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day1/dynamodb_items.png
+
+**TRADE-OFF ACCEPTED:**
+- Gave up SQL aggregation flexibility for faster setup, lower cost, simpler scaling
+
+---
+
+### DECISION 2: Bedrock KB (RAG) over direct InvokeModel
+**ALTERNATIVES CONSIDERED:**
+- Direct InvokeModel only — fastest to build, but cannot ground answers in uploaded docs
+- Full custom vector DB — more control, too much implementation risk in 48h
+
+**MEASUREMENT:**
+- [Điền sau: X/5 probe questions answered correctly with citation]
+- [Điền sau: average latency ___ ms]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/qa_citations.png
+
+**TRADE-OFF ACCEPTED:**
+- Bedrock KB less customizable, but much faster to ship in 48h
+
+---
+
+### DECISION 3: Claude Haiku over Sonnet
+**ALTERNATIVES CONSIDERED:**
+- Claude Sonnet — better reasoning, ~3x higher cost
+- Titan Text — cheaper, weaker answer quality on our sample questions
+
+**MEASUREMENT:**
+- Haiku: $1.00/1M input tokens, $5.00/1M output tokens
+- Sonnet: $3.00/1M input tokens, $15.00/1M output tokens
+- [Điền sau: Haiku answered X/5 probe questions correctly]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/bedrock_logs.png
+
+**TRADE-OFF ACCEPTED:**
+- Slightly weaker reasoning than Sonnet, accepted to reduce cost and keep demo fast
+
+---
+
+## 5. Deployment Evidence
+
+### Public URL
+![Public URL loads](screenshots/day1/public_url.png)
+- URL: [điền]
+- Status: loads in browser, no SSL errors
+
+### API Gateway
+![API Gateway](screenshots/day1/api_gateway.png)
+
+### Lambda function
+![Lambda](screenshots/day1/lambda_function.png)
+
+### Lambda CloudWatch logs
+![CloudWatch logs](screenshots/day1/cloudwatch_logs.png)
+
+### S3 object after upload
+![S3 object](screenshots/day1/s3_object.png)
+- Bucket: [tên bucket]
+- Block Public Access: ON
+- Versioning: ON
+- Encryption: ON
+
+### DynamoDB record
+![DynamoDB](screenshots/day1/dynamodb_items.png)
+- Table: [tên table]
+- Record exists after upload
+
+### IAM role
+![IAM role](screenshots/day1/iam_role.png)
+- Role name: [tên role]
+- No AdministratorAccess, no wildcard Action: *
+
+---
+
+## 6. AI Evidence
+
+### Sample input file
+- File: docs/sample_input/lecture.pdf
+- Type: [PDF với table/figure/caption]
+
+### Summary output
+![Summary](screenshots/day2/summary_output.png)
+
+### Q&A with citation
+![Q&A citation](screenshots/day2/qa_citations.png)
+- Citation format: [filename - chunk_id]
+
+### Quiz output
+![Quiz](screenshots/day2/quiz_output.png)
+- 5 MCQ questions generated
+
+### Retrieval evidence
+- [Điền: chunking strategy dùng gì, chunk size bao nhiêu]
+- [Điền: failure mode phát hiện được là gì, đã fix thế nào]
+
+---
+
+## 7. Security and IAM
+
+### IAM least-privilege policy
+Lambda execution role permissions:
+
+---
+
+## 4. Service Decisions and Trade-offs
+
+### DECISION 1: DynamoDB over RDS
+**ALTERNATIVES CONSIDERED:**
+- RDS PostgreSQL — better for relational analytics, but unnecessary for simple topic/doc lookup
+- SQLite — easy local dev, not suitable for persistent cloud demo
+
+**MEASUREMENT:**
+- Access pattern 1: list docs by user/topic → single key lookup
+- Access pattern 2: save query history by user/topic → single key lookup
+- Both patterns do not require JOIN
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day1/dynamodb_items.png
+
+**TRADE-OFF ACCEPTED:**
+- Gave up SQL aggregation flexibility for faster setup, lower cost, simpler scaling
+
+---
+
+### DECISION 2: Bedrock KB (RAG) over direct InvokeModel
+**ALTERNATIVES CONSIDERED:**
+- Direct InvokeModel only — fastest to build, but cannot ground answers in uploaded docs
+- Full custom vector DB — more control, too much implementation risk in 48h
+
+**MEASUREMENT:**
+- [Điền sau: X/5 probe questions answered correctly with citation]
+- [Điền sau: average latency ___ ms]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/qa_citations.png
+
+**TRADE-OFF ACCEPTED:**
+- Bedrock KB less customizable, but much faster to ship in 48h
+
+---
+
+### DECISION 3: Claude Haiku over Sonnet
+**ALTERNATIVES CONSIDERED:**
+- Claude Sonnet — better reasoning, ~3x higher cost
+- Titan Text — cheaper, weaker answer quality on our sample questions
+
+**MEASUREMENT:**
+- Haiku: $1.00/1M input tokens, $5.00/1M output tokens
+- Sonnet: $3.00/1M input tokens, $15.00/1M output tokens
+- [Điền sau: Haiku answered X/5 probe questions correctly]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/bedrock_logs.png
+
+**TRADE-OFF ACCEPTED:**
+- Slightly weaker reasoning than Sonnet, accepted to reduce cost and keep demo fast
+
+---
+
+## 5. Deployment Evidence
+
+### Public URL
+![Public URL loads](screenshots/day1/public_url.png)
+- URL: [điền]
+- Status: loads in browser, no SSL errors
+
+### API Gateway
+![API Gateway](screenshots/day1/api_gateway.png)
+
+### Lambda function
+![Lambda](screenshots/day1/lambda_function.png)
+
+### Lambda CloudWatch logs
+![CloudWatch logs](screenshots/day1/cloudwatch_logs.png)
+
+### S3 object after upload
+![S3 object](screenshots/day1/s3_object.png)
+- Bucket: [tên bucket]
+- Block Public Access: ON
+- Versioning: ON
+- Encryption: ON
+
+### DynamoDB record
+![DynamoDB](screenshots/day1/dynamodb_items.png)
+- Table: [tên table]
+- Record exists after upload
+
+### IAM role
+![IAM role](screenshots/day1/iam_role.png)
+- Role name: [tên role]
+- No AdministratorAccess, no wildcard Action: *
+
+---
+
+## 6. AI Evidence
+
+### Sample input file
+- File: docs/sample_input/lecture.pdf
+- Type: [PDF với table/figure/caption]
+
+### Summary output
+![Summary](screenshots/day2/summary_output.png)
+
+### Q&A with citation
+![Q&A citation](screenshots/day2/qa_citations.png)
+- Citation format: [filename - chunk_id]
+
+### Quiz output
+![Quiz](screenshots/day2/quiz_output.png)
+- 5 MCQ questions generated
+
+### Retrieval evidence
+- [Điền: chunking strategy dùng gì, chunk size bao nhiêu]
+- [Điền: failure mode phát hiện được là gì, đã fix thế nào]
+
+---
+
+## 7. Security and IAM
+
+### IAM least-privilege policy
+Lambda execution role permissions:
+
+---
+
+## 4. Service Decisions and Trade-offs
+
+### DECISION 1: DynamoDB over RDS
+**ALTERNATIVES CONSIDERED:**
+- RDS PostgreSQL — better for relational analytics, but unnecessary for simple topic/doc lookup
+- SQLite — easy local dev, not suitable for persistent cloud demo
+
+**MEASUREMENT:**
+- Access pattern 1: list docs by user/topic → single key lookup
+- Access pattern 2: save query history by user/topic → single key lookup
+- Both patterns do not require JOIN
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day1/dynamodb_items.png
+
+**TRADE-OFF ACCEPTED:**
+- Gave up SQL aggregation flexibility for faster setup, lower cost, simpler scaling
+
+---
+
+### DECISION 2: Bedrock KB (RAG) over direct InvokeModel
+**ALTERNATIVES CONSIDERED:**
+- Direct InvokeModel only — fastest to build, but cannot ground answers in uploaded docs
+- Full custom vector DB — more control, too much implementation risk in 48h
+
+**MEASUREMENT:**
+- [Điền sau: X/5 probe questions answered correctly with citation]
+- [Điền sau: average latency ___ ms]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/qa_citations.png
+
+**TRADE-OFF ACCEPTED:**
+- Bedrock KB less customizable, but much faster to ship in 48h
+
+---
+
+### DECISION 3: Claude Haiku over Sonnet
+**ALTERNATIVES CONSIDERED:**
+- Claude Sonnet — better reasoning, ~3x higher cost
+- Titan Text — cheaper, weaker answer quality on our sample questions
+
+**MEASUREMENT:**
+- Haiku: $1.00/1M input tokens, $5.00/1M output tokens
+- Sonnet: $3.00/1M input tokens, $15.00/1M output tokens
+- [Điền sau: Haiku answered X/5 probe questions correctly]
+
+**EVIDENCE:**
+- Screenshot: docs/screenshots/day2/bedrock_logs.png
+
+**TRADE-OFF ACCEPTED:**
+- Slightly weaker reasoning than Sonnet, accepted to reduce cost and keep demo fast
+
+---
+
+## 5. Deployment Evidence
+
+### Public URL
+![Public URL loads](screenshots/day1/public_url.png)
+- URL: [điền]
+- Status: loads in browser, no SSL errors
+
+### API Gateway
+![API Gateway](screenshots/day1/api_gateway.png)
+
+### Lambda function
+![Lambda](screenshots/day1/lambda_function.png)
+
+### Lambda CloudWatch logs
+![CloudWatch logs](screenshots/day1/cloudwatch_logs.png)
+
+### S3 object after upload
+![S3 object](screenshots/day1/s3_object.png)
+- Bucket: [tên bucket]
+- Block Public Access: ON
+- Versioning: ON
+- Encryption: ON
+
+### DynamoDB record
+![DynamoDB](screenshots/day1/dynamodb_items.png)
+- Table: [tên table]
+- Record exists after upload
+
+### IAM role
+![IAM role](screenshots/day1/iam_role.png)
+- Role name: [tên role]
+- No AdministratorAccess, no wildcard Action: *
+
+---
+
+## 6. AI Evidence
+
+### Sample input file
+- File: docs/sample_input/lecture.pdf
+- Type: [PDF với table/figure/caption]
+
+### Summary output
+![Summary](screenshots/day2/summary_output.png)
+
+### Q&A with citation
+![Q&A citation](screenshots/day2/qa_citations.png)
+- Citation format: [filename - chunk_id]
+
+### Quiz output
+![Quiz](screenshots/day2/quiz_output.png)
+- 5 MCQ questions generated
+
+### Retrieval evidence
+- [Điền: chunking strategy dùng gì, chunk size bao nhiêu]
+- [Điền: failure mode phát hiện được là gì, đã fix thế nào]
+
+---
+
+## 7. Security and IAM
+
+### IAM least-privilege policy
+Lambda execution role permissions:
