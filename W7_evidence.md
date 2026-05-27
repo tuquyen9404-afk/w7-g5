@@ -22,7 +22,7 @@
 ## 3. Architecture
 
 ### Final architecture diagram
-[Architecture Diagram](../Architecture_diagram.png)
+![Architecture Diagram](screenshots/day1/Architecture_diagram.png)
 
 ### Service mapping — 7 mandatory capabilities
 | # | Capability | Service | Why |
