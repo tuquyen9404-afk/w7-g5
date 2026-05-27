@@ -519,3 +519,63 @@ Lambda execution role permissions:
 
 ### IAM least-privilege policy
 Lambda execution role permissions:
+---
+
+## 8. Observability
+
+### CloudWatch dashboard
+![Dashboard](screenshots/day2/cloudwatch_dashboard.png)
+
+### Custom metric
+- Metric name: StudyBot/DocumentsUploaded
+
+### Alarm
+![Alarm](screenshots/day2/cloudwatch_alarm.png)
+- State: OK (not INSUFFICIENT_DATA)
+
+### Log Insights query
+- Filter: ERROR, Exception, AccessDenied
+![Log Insights](screenshots/day2/log_insights.png)
+
+---
+
+## 9. Cost
+
+### Day 1 EOD screenshot
+![Cost Day 1](screenshots/day1/cost_day1_eod.png)
+
+### Day 2 EOD screenshot
+![Cost Day 2](screenshots/day2/cost_day2_eod.png)
+
+### Demo morning screenshot
+![Cost Demo](screenshots/day2/cost_demo_morning.png)
+
+### Top 3 cost drivers
+1. [Service 1] — $[amount]
+2. [Service 2] — $[amount]
+3. [Service 3] — $[amount]
+
+### Cost control notes
+- Used Claude Haiku not Sonnet
+- No NAT Gateway, used VPC endpoints
+- Total spend: $[điền]
+
+---
+
+## 10. Lessons Learned
+
+[Điền cuối Day 2 — khoảng 200 chữ]
+
+---
+
+## 11. Teardown Plan
+
+1. CloudFront — disable rồi delete
+2. API Gateway — delete
+3. Lambda — delete
+4. Bedrock KB / OpenSearch — delete
+5. DynamoDB — delete
+6. S3 buckets — empty rồi delete
+7. CloudWatch — delete
+8. IAM roles — delete
+9. VPC endpoints — delete cuối cùng
