@@ -3,19 +3,18 @@
 ## 1. Cover
 - Group ID: G5
 - Members: Minh, Nam, Hoàng, Vinh, Sơn, Quyên, Thủy
-- Live URL: [điền sau khi deploy]
-- GitHub repo: [điền link repo]
-- Demo video: [điền link]
+- Live URL: [điền sau]
+- GitHub repo: https://github.com/tuquyen9404-afk/w7-g5
+- Demo video: [điền sau]
 - Total spend: $[điền sau]
-
----
 
 ## 2. Domain + Use Case
 - Domain: C — ProductivityTech
 - App name: AI Document Hub (DocHub)
-- Target users: Legal teams, compliance officers, knowledge workers managing large document libraries
-- User pain: Teams waste hours searching through contracts and policies to find specific clauses or obligations
+- Target users: Legal teams, compliance officers, knowledge workers
+- User pain: Teams waste hours searching contracts to find specific clauses
 - Real-world parallel: Harvey AI, Ironclad, Glean, Microsoft Copilot for M365
+
 
 ---
 
