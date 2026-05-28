@@ -153,8 +153,9 @@ TRADE-OFF ACCEPTED:
 - Repository: [tên repo]
 - Image pushed successfully
 
-### Lambda CloudWatch logs
+### ECS CloudWatch logs
 ![CloudWatch logs](screenshots/day1/cloudwatch_logs.png)
+
 
 ### S3 object after upload
 ![S3 object](screenshots/day1/s3_object.png)
@@ -217,6 +218,23 @@ TRADE-OFF ACCEPTED:
 - Metadata filters used: tenant_id, workspace_id, is_latest=true
 - Wrong-document failure mode found: [điền — tên query bị sai, đã fix thế nào]
 - Stale-version mitigation: [điền — is_latest field + DynamoDB latest_version]
+## 6.5 Measurement & Decisions
+
+### DECISION: Metadata Filtering cho Tenant Isolation
+ALTERNATIVES CONSIDERED:
+- Tạo Bedrock KB riêng mỗi tenant — bị loại vì quota + cost (~$27.65/collection/48h)
+- DynamoDB text search — bị loại vì không có semantic search
+
+MEASUREMENT:
+- Cross-tenant leak rate: [điền sau] / 10 test queries
+- Cost savings vs multi-KB: ~$27.65 per extra collection avoided
+
+EVIDENCE:
+- Screenshot: docs/screenshots/day2/tenant_isolation.png
+
+TRADE-OFF ACCEPTED:
+- Phải maintain .metadata.json cho mỗi file upload
+- Cleanup logic phức tạp hơn khi xóa file
 
 ---
 
