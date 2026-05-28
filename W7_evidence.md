@@ -158,7 +158,7 @@ TRADE-OFF ACCEPTED:
 
 
 ### S3 object after upload
-![S3 object](screenshots/day1/s3_object.png)
+![S3 object](docs/screenshots/day1/s3_object.png)
 - Bucket: dochub-docs-g5-[account-id]
 - Block Public Access: ON
 - Versioning: ON
